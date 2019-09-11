@@ -6,7 +6,7 @@
 
 namespace Quocnt.Social.Database
 {
-    public enum Provider
+    public enum EnumProvider
     {
         None,
         Facebook,
@@ -14,6 +14,13 @@ namespace Quocnt.Social.Database
         GameCenter,
         Email,
         Firebase
+    }
+
+    public enum EnumLoginState
+    {
+        Success,
+        Cancel,
+        Error,
     }
 
     public class DefineContain

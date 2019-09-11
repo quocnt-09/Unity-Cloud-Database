@@ -11,6 +11,8 @@ namespace Quocnt.Social.Database
     {
         public string uid;
         public string userName;
+        public string email;
+        public string password;
         public string avatar;
         public string token;
         public string code;

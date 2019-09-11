@@ -4,28 +4,30 @@
  * Date: 2019-09-11
  * * * * * */
 
+using System;
+
 namespace Quocnt.Social.Database
 {
     public class LoginGooglePlay : ILoginSocial
     {
-        public void Initialize()
+        protected Action<EnumLoginState, SocialUser> loginCallback;
+
+        public virtual void Initialize(Action<EnumLoginState, SocialUser> callback)
         {
-            throw new System.NotImplementedException();
+            loginCallback = callback;
         }
 
-        public void Login()
+        public virtual void Login(EnumProvider provider)
         {
-            throw new System.NotImplementedException();
         }
 
-        public void Logout()
+        public virtual void Logout()
         {
-            throw new System.NotImplementedException();
         }
 
-        public bool IsLogin()
+        public virtual bool IsLogin()
         {
-            throw new System.NotImplementedException();
+            return false;
         }
     }
 }

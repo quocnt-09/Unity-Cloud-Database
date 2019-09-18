@@ -9,7 +9,7 @@ using Firebase.Auth;
 using Firebase.Extensions;
 using UnityEngine;
 
-namespace Quocnt.Social.Database
+namespace Social.Database
 {
     public class LoginFirebase : ILoginSocial
     {
@@ -22,6 +22,7 @@ namespace Quocnt.Social.Database
 
         public virtual void Initialize(Action<EnumLoginState, SocialUser> callback)
         {
+            signedIn = false;
             loginCallback = callback;
             currentProvider = EnumProvider.None;
             auth = FirebaseAuth.DefaultInstance;
@@ -37,20 +38,39 @@ namespace Quocnt.Social.Database
                 if (!signedIn && user != null)
                 {
                     Debug.LogError("Signed out " + user.UserId);
+                    return;
                 }
 
                 user = auth.CurrentUser;
+                var providerData = user.ProviderData;
+                foreach (var pro in providerData)
+                {
+                    var id = pro.ProviderId;
+                    Debug.Log($"ProviderId: {id}");
+                }
+
                 if (signedIn)
                 {
-                    Debug.Log($"AuthStateChanged: Signed in {user.DisplayName} - {user.UserId}");
+                    Debug.Log($"AuthStateChanged: Signed in {user.DisplayName} - {user.UserId} - {user.ProviderId}");
                 }
             }
+        }
+
+        SocialUser CopyToSocialUser(FirebaseUser user)
+        {
+            var socialUser = new SocialUser();
+            socialUser.uid = user.UserId ?? "";
+            socialUser.userName = user.DisplayName ?? "";
+            socialUser.avatar = user.PhotoUrl?.ToString();
+            socialUser.email = user.Email ?? "";
+            socialUser.code = user.ProviderId ?? "";
+            return socialUser;
         }
 
         public virtual void Login(EnumProvider provider)
         {
             Debug.Log("LoginFirebase with: " + provider);
-            if (currentProvider != EnumProvider.None && currentProvider != provider)
+            if (currentProvider != EnumProvider.None && currentProvider != provider || (signedIn && currentProvider != provider))
             {
                 Logout();
             }
@@ -60,22 +80,17 @@ namespace Quocnt.Social.Database
                 currentProvider = provider;
                 try
                 {
-                    loginCallback?.Invoke(EnumLoginState.Success, new SocialUser
-                    {
-                        uid = user.UserId,
-                        userName = user.DisplayName ?? "",
-                        avatar = user.PhotoUrl.ToString(),
-                        email = user.Email,
-                        code = user.ProviderId,
-                    });
+                    loginCallback?.Invoke(EnumLoginState.Success, CopyToSocialUser(user));
                 }
                 catch (Exception ex)
                 {
+                    Debug.LogError("LoginFirebase error: " + ex);
                     loginCallback(EnumLoginState.Error, null);
                 }
             }
             else
             {
+                currentProvider = provider;
                 switch (provider)
                 {
                     case EnumProvider.Facebook:
@@ -103,7 +118,6 @@ namespace Quocnt.Social.Database
                 GameCenterAuthProvider.GetCredentialAsync()
                     .ContinueWithOnMainThread(task =>
                     {
-                        bool isSuccess = true;
                         if (task.IsCanceled)
                         {
                             Debug.LogError("GetCredentialAsync was canceled ");
@@ -133,43 +147,54 @@ namespace Quocnt.Social.Database
             SignInWithCredentialAsync(credential);
         }
 
+        void CreateUserWithEmailAndPasswordAsync()
+        {
+            auth.CreateUserWithEmailAndPasswordAsync(credentialUser.email, credentialUser.password)
+                .ContinueWithOnMainThread(task =>
+                {
+                    if (task.IsCanceled)
+                    {
+                        Debug.LogError("CreateUserWithEmailAndPasswordAsync was canceled.");
+                        loginCallback?.Invoke(EnumLoginState.Error, null);
+                        return;
+                    }
+
+                    if (task.IsFaulted)
+                    {
+                        Debug.LogError("CreateUserWithEmailAndPasswordAsync encountered an error: " + task.Exception);
+                        loginCallback?.Invoke(EnumLoginState.Error, null);
+                        return;
+                    }
+
+                    // Firebase user has been created.
+                    FirebaseUser newUser = task.Result;
+                    loginCallback?.Invoke(EnumLoginState.Success, CopyToSocialUser(newUser));
+                    Debug.LogFormat("User signed in successfully: {0} ({1})", newUser.DisplayName, newUser.UserId);
+                });
+        }
+
         private void AuthenticationWithEmailPassword()
         {
             auth.SignInWithEmailAndPasswordAsync(credentialUser.email, credentialUser.password)
                 .ContinueWithOnMainThread(task =>
                 {
-                    if (task.IsCompleted)
-                    {
-                        FirebaseUser newUser = task.Result;
-                        var firebaseUser = new SocialUser
-                        {
-                            uid = newUser.UserId,
-                            userName = newUser.DisplayName ?? "",
-                            avatar = newUser.PhotoUrl.ToString(),
-                            email = newUser.Email,
-                            code = newUser.ProviderId,
-                        };
-                        loginCallback?.Invoke(EnumLoginState.Success, firebaseUser);
-                        Debug.LogFormat("User signed in successfully: {0} ({1})", newUser.DisplayName, newUser.UserId);
-                        return;
-                    }
-
                     if (task.IsCanceled)
                     {
                         Debug.LogError("SignInWithEmailAndPasswordAsync was canceled.");
-                        loginCallback(EnumLoginState.Error, null);
+                        CreateUserWithEmailAndPasswordAsync();
                         return;
                     }
 
                     if (task.IsFaulted)
                     {
                         Debug.LogError("SignInWithEmailAndPasswordAsync encountered an error: " + task.Exception);
-                        loginCallback(EnumLoginState.Error, null);
+                        CreateUserWithEmailAndPasswordAsync();
                         return;
                     }
 
-                    Credential credential = EmailAuthProvider.GetCredential(credentialUser.email, credentialUser.password);
-                    SignInWithCredentialAsync(credential);
+                    FirebaseUser newUser = task.Result;
+                    loginCallback?.Invoke(EnumLoginState.Success, CopyToSocialUser(newUser));
+                    Debug.LogFormat("User signed in successfully: {0} ({1})", newUser.DisplayName, newUser.UserId);
                 });
         }
 
@@ -199,21 +224,14 @@ namespace Quocnt.Social.Database
                     }
 
                     FirebaseUser newUser = task.Result;
-                    var firebaseUser = new SocialUser
-                    {
-                        uid = newUser.UserId,
-                        userName = newUser.DisplayName ?? "",
-                        avatar = newUser.PhotoUrl.ToString(),
-                        email = newUser.Email,
-                        code = newUser.ProviderId,
-                    };
-                    loginCallback?.Invoke(EnumLoginState.Success, firebaseUser);
+                    loginCallback?.Invoke(EnumLoginState.Success, CopyToSocialUser(newUser));
                     Debug.LogFormat("User signed in successfully: {0} ({1})", newUser.DisplayName, newUser.UserId);
                 });
         }
 
         public virtual void Logout()
         {
+            Debug.Log("LoginFirebase Logout: ");
             auth.SignOut();
             signedIn = false;
         }

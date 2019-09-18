@@ -12,7 +12,7 @@ using Facebook.Unity;
 
 #endif
 
-namespace Quocnt.Social.Database
+namespace Social.Database
 {
     public class LoginFacebook : ILoginSocial
     {
@@ -45,6 +45,7 @@ namespace Quocnt.Social.Database
 
         public virtual void Logout()
         {
+            FB.LogOut();
         }
 
         public virtual bool IsLogin()

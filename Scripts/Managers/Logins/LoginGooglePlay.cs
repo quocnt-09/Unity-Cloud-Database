@@ -6,7 +6,7 @@
 
 using System;
 
-namespace Quocnt.Social.Database
+namespace Social.Database
 {
     public class LoginGooglePlay : ILoginSocial
     {

@@ -7,24 +7,25 @@
 using System;
 using UnityEngine;
 
-namespace Quocnt.Social.Database
+namespace Social.Database
 {
     public class LoginEmail : ILoginSocial
     {
         public SocialUser credentialUser { get; set; }
-
+        protected Action<EnumLoginState, SocialUser> loginCallback;
         public void Initialize(Action<EnumLoginState, SocialUser> callback)
         {
+            loginCallback = callback;
             credentialUser = new SocialUser
             {
                 email = $"{SystemInfo.deviceName}@gmail.com", 
-                password = SystemInfo.deviceName,
+                password = SystemInfo.deviceUniqueIdentifier,
             };
         }
 
         public void Login(EnumProvider provider)
         {
-            
+            loginCallback?.Invoke(EnumLoginState.Success, credentialUser);
         }
 
         public void Logout()

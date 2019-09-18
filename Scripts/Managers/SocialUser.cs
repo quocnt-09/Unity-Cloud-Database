@@ -2,11 +2,13 @@
  * Authurt: Quoc Nguyen
  * Email: ntq.quoc@gmail.com
  * Date: 2019-09-11
- * * * * * */ 
+ * * * * * */
 
-namespace Quocnt.Social.Database
+using System;
+
+namespace Social.Database
 {
-    [System.Serializable]
+    [Serializable]
     public class SocialUser
     {
         public string uid;
@@ -16,5 +18,36 @@ namespace Quocnt.Social.Database
         public string avatar;
         public string token;
         public string code;
+
+        public string DebugString()
+        {
+            var txt = "";
+            if (!string.IsNullOrEmpty(uid))
+            {
+                txt += $"uid: {uid}";
+            }
+
+            if (!string.IsNullOrEmpty(userName))
+            {
+                txt += $"\nuserName: {userName}";
+            }
+
+            if (!string.IsNullOrEmpty(email))
+            {
+                txt += $"\nemail: {email}";
+            }
+
+            /*if (!string.IsNullOrEmpty(token))
+            {
+                txt += $"\ntoken: {token}";
+            }
+
+            if (!string.IsNullOrEmpty(code))
+            {
+                txt += $"\ncode: {code}";
+            }*/
+
+            return txt;
+        }
     }
 }

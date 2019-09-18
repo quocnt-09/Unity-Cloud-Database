@@ -4,15 +4,24 @@
  * Date: 2019-09-11
  * * * * * */
 
-namespace Quocnt.Social.Database
+namespace Social.Database
 {
+    public enum EnumVerifyData
+    {
+        None,
+        LocalNew,
+        ServerNew,
+        GameIdConflict,
+        DeviceIdConflict,
+    }
+
     public enum EnumProvider
     {
         None,
+        Email,
         Facebook,
         GooglePlay,
         GameCenter,
-        Email,
         Firebase
     }
 
@@ -21,6 +30,47 @@ namespace Quocnt.Social.Database
         Success,
         Cancel,
         Error,
+    }
+
+    public enum EnumDataState
+    {
+        Error,
+        Cancel,
+        Success,
+        NoData,
+    }
+
+    public enum EnumMappingState
+    {
+        Success,
+        Error,
+        NoData
+    }
+
+    [System.Serializable]
+    public class GameMapID
+    {
+    }
+
+    
+    public interface SocialMapID
+    {
+        string ToDataString();
+    }
+
+    [System.Serializable]
+    public class HashKeyID
+    {
+    }
+    
+    [System.Serializable]
+    public class SocialData
+    {
+    }
+
+    [System.Serializable]
+    public class HashKey
+    {
     }
 
     public class DefineContain

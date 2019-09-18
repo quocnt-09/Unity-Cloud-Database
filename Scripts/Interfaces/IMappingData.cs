@@ -1,18 +1,29 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿/* * * * * * 
+ * Author: Quoc Nguyen
+ * Email: ntq.quoc@gmail.com
+ * Date: 2019-09-11
+ * * * * * */
 
-public class IMappingData : MonoBehaviour
+using System;
+
+namespace Social.Database
 {
-    // Start is called before the first frame update
-    void Start()
+    public interface IMappingData
     {
-        
-    }
+        void Initialize(string dataURL);
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        void MappingData(string authenID, string gameID, Action<EnumMappingState, string, GameMapID> callback);
+
+        void GetAuthenticationMap(string authenID, Action<EnumDataState, SocialMapID> callback);
+
+        void CreateAuthenticationMap(string authenID, SocialMapID socialMapId);
+
+        void GetGameIdMap(string gameID, Action<EnumDataState, GameMapID> callback);
+
+        void CreateGameIdMap(string authenID, GameMapID gameMap);
+
+        void GetHashKey(string gameID, Action<EnumDataState, HashKeyID> callback);
+
+        void CreateHashKey(string authenID, HashKeyID hashKey);
     }
 }

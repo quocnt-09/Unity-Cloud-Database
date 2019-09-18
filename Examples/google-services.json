@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "327645485663",
+    "firebase_url": "https://unity-framework-1109.firebaseio.com",
+    "project_id": "unity-framework-1109",
+    "storage_bucket": "unity-framework-1109.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:327645485663:android:a58cce4354b19cf4efd9ea",
+        "android_client_info": {
+          "package_name": "com.quocnt.UnityFramework"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "327645485663-hg7skur6lnboeo1v2a7evsg11i45b1eh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC11k68pHOIl6ym0Pm1KDo-IhDZ2PrIQm8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "327645485663-hg7skur6lnboeo1v2a7evsg11i45b1eh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

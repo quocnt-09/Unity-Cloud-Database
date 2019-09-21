@@ -13,7 +13,7 @@ namespace Social.Database
     {
         public SocialUser credentialUser { get; set; }
         protected Action<EnumLoginState, SocialUser> loginCallback;
-        public void Initialize(Action<EnumLoginState, SocialUser> callback)
+        public virtual void Initialize(Action<EnumLoginState, SocialUser> callback)
         {
             loginCallback = callback;
             credentialUser = new SocialUser
@@ -23,18 +23,18 @@ namespace Social.Database
             };
         }
 
-        public void Login(EnumProvider provider)
+        public virtual void Login(EnumProvider provider)
         {
             loginCallback?.Invoke(EnumLoginState.Success, credentialUser);
         }
 
-        public void Logout()
+        public virtual void Logout()
         {
         }
 
-        public bool IsLogin()
+        public virtual bool IsSigned()
         {
-            return false;
+            return true;
         }
     }
 }

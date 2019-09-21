@@ -365,5 +365,10 @@ namespace Social.Database.Example
 
             return data;
         }
+
+        public string GetFirebaseAuthenID(EnumProvider provider)
+        {
+            return "";
+        }
     }
 }

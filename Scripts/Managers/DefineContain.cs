@@ -18,25 +18,24 @@ namespace Social.Database
     public enum EnumProvider
     {
         None,
+        Guest,
         Email,
         Facebook,
         GooglePlay,
         GameCenter,
-        Firebase
+        Firebase,
     }
 
     public enum EnumLoginState
     {
         Success,
-        Cancel,
         Error,
     }
 
     public enum EnumDataState
     {
         Error,
-        Cancel,
-        Success,
+        Exists,
         NoData,
     }
 
@@ -44,7 +43,18 @@ namespace Social.Database
     {
         Success,
         Error,
-        NoData
+        CreateNewData,
+        NoDataAuthen_ExitsGameId,
+        NoDataAuthen_NoMatchGameId,
+        ExitsAuthen_NoDataGameID,
+        TwoAuthenOneGameID
+    }
+
+    public enum EnumSocialState
+    {
+        CheckHashKey,
+        CreateNewData,
+        MappingDataFaile
     }
 
     [System.Serializable]
@@ -52,7 +62,6 @@ namespace Social.Database
     {
     }
 
-    
     public interface SocialMapID
     {
         string ToDataString();
@@ -62,7 +71,7 @@ namespace Social.Database
     public class HashKeyID
     {
     }
-    
+
     [System.Serializable]
     public class SocialData
     {
@@ -79,5 +88,11 @@ namespace Social.Database
         public static readonly string GAME_MAPPING = "GAME_MAPPING";
         public static readonly string USER_DATA = "USERS_DATA";
         public static readonly string HASH_KEY = "HASH_KEYS";
+
+        public static readonly string DebugFacebook = "<--social facebook-->";
+        public static readonly string DebugGoogle = "<--social google play-->";
+        public static readonly string DebugGameCenter = "<--social game center-->";
+        public static readonly string DebugFirebase = "<--social firebase-->";
+        public static readonly string DebugMapping = "<--social mapping-->";
     }
 }

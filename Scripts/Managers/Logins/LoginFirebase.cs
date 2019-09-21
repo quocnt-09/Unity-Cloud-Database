@@ -236,7 +236,7 @@ namespace Social.Database
             signedIn = false;
         }
 
-        public virtual bool IsLogin()
+        public virtual bool IsSigned()
         {
             return signedIn;
         }

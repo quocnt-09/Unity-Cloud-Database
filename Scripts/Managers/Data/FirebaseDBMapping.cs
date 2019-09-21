@@ -23,7 +23,7 @@ namespace Social.Database
             FirebaseApp.DefaultInstance.SetEditorDatabaseUrl(dataUrl);
         }
 
-        public virtual void MappingData(string authenID, string gameID, Action<EnumMappingState, string, GameMapID> callback)
+        public virtual void MappingData(EnumProvider providerCheck, string authenID, string localGameID, GameMapID gameMaps, Action<EnumMappingState, SocialMapID, GameMapID> callback)
         {
         }
 
@@ -39,7 +39,7 @@ namespace Social.Database
         {
         }
 
-        public virtual void CreateGameIdMap(string authenID, GameMapID gameMap)
+        public virtual void CreateGameIdMap(string gameID, GameMapID gameMap)
         {
         }
 
@@ -47,7 +47,11 @@ namespace Social.Database
         {
         }
 
-        public virtual void CreateHashKey(string authenID, HashKeyID hashKey)
+        public virtual void CreateHashKey(string gameID, HashKeyID hashKey)
+        {
+        }
+
+        public virtual void UpdateMappingID(string authenID, string gameID, GameMapID gameMapId)
         {
         }
     }

@@ -12,7 +12,7 @@ namespace Social.Database
     {
         void Initialize(string dataURL);
 
-        void MappingData(string authenID, string gameID, Action<EnumMappingState, string, GameMapID> callback);
+        void MappingData(EnumProvider providerCheck, string authenID, string gameID, GameMapID gameMaps, Action<EnumMappingState, SocialMapID, GameMapID> callback);
 
         void GetAuthenticationMap(string authenID, Action<EnumDataState, SocialMapID> callback);
 
@@ -20,10 +20,11 @@ namespace Social.Database
 
         void GetGameIdMap(string gameID, Action<EnumDataState, GameMapID> callback);
 
-        void CreateGameIdMap(string authenID, GameMapID gameMap);
+        void CreateGameIdMap(string gameID, GameMapID gameMap);
 
         void GetHashKey(string gameID, Action<EnumDataState, HashKeyID> callback);
 
-        void CreateHashKey(string authenID, HashKeyID hashKey);
+        void CreateHashKey(string gameID, HashKeyID hashKey);
+        void UpdateMappingID(string authenID, string gameID, GameMapID gameMapId);
     }
 }

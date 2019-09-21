@@ -1,4 +1,5 @@
 ﻿using System;
+using Facebook.Unity;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,7 +20,8 @@ namespace Social.Database.Example
         private MappingDataExample mappingData;
         private EnumProvider provider;
         private string currentAuthenID;
-        private string localGameId;
+        private string currentGameId;
+        private GameMapIDEX currentGameIdMap;
 
         private void Start()
         {
@@ -52,7 +54,7 @@ namespace Social.Database.Example
             {
                 loginFirebase.credentialUser = user;
                 currentAuthenID = user.uid;
-                localGameId = SaveManagerExample.GetMainID();
+                currentGameId = SaveManagerExample.GetMainID();
 
                 text += $"\nInfo: {user.DebugString()}";
                 buttonSyncData.SetActive(true);
@@ -134,25 +136,96 @@ namespace Social.Database.Example
 
         public void OnSyncData()
         {
-            text += "\n\nSync Data: " + currentAuthenID;
-            mappingData.MappingData(currentAuthenID, localGameId, (state, outGameId, outGameMaps) =>
+            CheckMappingData();
+        }
+
+        public void CheckMappingData()
+        {
+            /*currentGameIdMap = new GameMapIDEX()
             {
-                text += "\nState: " + state;
-                text += "\nOutGameID: " + outGameId;
-                text += "\nOutGameMaps: " + outGameMaps;
-                switch (state)
+                authFacebook = SaveManagerExample.Instance.GetFirebaseAuthenID(EnumProvider.Facebook),
+                authGameCenter = SaveManagerExample.Instance.GetFirebaseAuthenID(EnumProvider.GameCenter),
+                authGooglePlay = SaveManagerExample.Instance.GetFirebaseAuthenID(EnumProvider.GooglePlay),
+                authEmail = SaveManagerExample.Instance.GetFirebaseAuthenID(EnumProvider.Email),
+                authGuest = SaveManagerExample.Instance.GetFirebaseAuthenID(EnumProvider.Guest),
+            };*/
+            
+            currentGameIdMap = new GameMapIDEX()
+            {
+                authFacebook = currentAuthenID,
+                authGameCenter = currentAuthenID,
+                authGooglePlay = currentAuthenID,
+                authEmail = currentAuthenID,
+                authGuest = currentAuthenID,
+            };
+
+            mappingData.MappingData(provider, currentAuthenID, currentGameId, currentGameIdMap, (dataState, outGameID, outGameIDsMap) =>
+            {
+                Debug.Log($"{DefineContain.DebugMapping} MappingData dataState: {dataState}");
+                switch (dataState)
                 {
                     case EnumMappingState.Success:
+                        currentGameIdMap = (GameMapIDEX) outGameIDsMap;
+                        currentGameId = ((SocialMapIDEX) outGameID).GameId;
+                        SetSocialState(EnumSocialState.CheckHashKey);
                         break;
-                    case EnumMappingState.Error:
+                   
+                    case EnumMappingState.CreateNewData:
+                        currentGameIdMap = (GameMapIDEX) outGameIDsMap;
+                        currentGameId = ((SocialMapIDEX) outGameID).GameId;
+                        SetSocialState(EnumSocialState.CreateNewData);
                         break;
-                    case EnumMappingState.NoData:
-                        mappingData.CreateAuthenticationMap(currentAuthenID, new SocialMapIDEX {GameId = localGameId});
+                    
+                    case EnumMappingState.NoDataAuthen_ExitsGameId:
+                        currentGameIdMap = (GameMapIDEX) outGameIDsMap;
+                        currentGameId = ((SocialMapIDEX) outGameID).GameId;
+                        SetSocialState(EnumSocialState.CheckHashKey);
                         break;
+
+                    case EnumMappingState.ExitsAuthen_NoDataGameID:
+                        currentGameIdMap = (GameMapIDEX) outGameIDsMap;
+                        currentGameId = ((SocialMapIDEX) outGameID).GameId;
+                        SetSocialState(EnumSocialState.CreateNewData);
+                        break;
+                    
+                    case EnumMappingState.TwoAuthenOneGameID:
+                    case EnumMappingState.NoDataAuthen_NoMatchGameId:
+                        currentGameId = Guid.NewGuid().ToString();
+                        currentGameIdMap = (GameMapIDEX) outGameIDsMap;
+                        SetSocialState(EnumSocialState.CreateNewData);
+                        break;
+
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(state), state, null);
+                        SetSocialState(EnumSocialState.MappingDataFaile);
+                        break;
                 }
             });
         }
+
+        void SetSocialState(EnumSocialState state)
+        {
+            switch (state)
+            {
+                case EnumSocialState.CheckHashKey:
+                    CheckHashKey();
+                    break;
+                case EnumSocialState.CreateNewData:
+                    CreateNewData();
+                    break;
+                case EnumSocialState.MappingDataFaile:
+                    break;
+            }
+        }
+
+        void CreateNewData()
+        {
+            mappingData.UpdateMappingID(currentGameId, currentGameId, currentGameIdMap);
+        }
+
+        void CheckHashKey()
+        {
+            
+        }
+
     }
 }

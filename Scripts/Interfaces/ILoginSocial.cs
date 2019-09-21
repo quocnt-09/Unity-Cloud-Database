@@ -10,9 +10,9 @@ namespace Social.Database
 {
     public interface ILoginSocial
     {
-        void Initialize(Action<EnumLoginState, SocialUser> callback);
+        void Initialize(Action<EnumLoginState, SocialUser> callback = null);
         void Login(EnumProvider provider);
         void Logout();
-        bool IsLogin();
+        bool IsSigned(); 
     }
 }
